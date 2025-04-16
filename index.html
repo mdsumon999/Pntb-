@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Running Game</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 300px;
+            border: 2px solid black;
+            overflow: hidden;
+            margin: auto;
+            background-color: lightblue;
+        }
+        .player {
+            position: absolute;
+            bottom: 0;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            left: 50px;
+        }
+        .obstacle {
+            position: absolute;
+            bottom: 0;
+            width: 30px;
+            height: 50px;
+            background-color: black;
+            right: 0;
+            animation: moveObstacle 2s linear infinite;
+        }
+        @keyframes moveObstacle {
+            from { right: 0; }
+            to { right: 100%; }
+        }
+        button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>কিউব রান</h1>
+    <div class="game-container">
+        <div class="player" id="player"></div>
+        <div class="obstacle" id="obstacle"></div>
+    </div>
+    <br>
+    <button onclick="jump()">Jump</button>
+    <button onclick="resetGame()">Reset</button>
+    <script>
+        let player = document.getElementById("player");
+        let obstacle = document.getElementById("obstacle");
+        let isJumping = false;
+        let gameRunning = true;function jump() {
+        if (isJumping || !gameRunning) return;
+        isJumping = true;
+        let position = 0;
+        let upInterval = setInterval(() => {
+            if (position >= 100) {
+                clearInterval(upInterval);
+                let downInterval = setInterval(() => {
+                    if (position <= 0) {
+                        clearInterval(downInterval);
+                        isJumping = false;
+                    }
+                    position -= 5;
+                    player.style.bottom = position + "px";
+                }, 20);
+            }
+            position += 70;
+            player.style.bottom = position + "px";
+        }, 20);
+    }
+
+    function checkCollision() {
+        let playerRect = player.getBoundingClientRect();
+        let obstacleRect = obstacle.getBoundingClientRect();
+        if (
+            playerRect.right > obstacleRect.left &&
+            playerRect.left < obstacleRect.right &&
+            playerRect.bottom > obstacleRect.top
+        ) {
+            gameRunning = false;
+            alert("হতভাগা গেমে ক্র্যাশ করেছিস🫵");
+            obstacle.style.animation = "none";
+        }
+    }
+
+    setInterval(() => {
+        if (gameRunning) checkCollision();
+    }, 50);
+
+    function resetGame() {
+        gameRunning = true;
+        obstacle.style.animation = "moveObstacle 2s linear infinite";
+    }
+</script>
+
+</body>
+</html>
